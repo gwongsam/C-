@@ -1,4 +1,7 @@
-# book list
-## C++ Concurrency in Action
-## Computer Network A Top Down Approach
-## Unix Network Programming
+# 书单
+## C++ Primer 第五版
+## C++并发编程实战 第二版
+## 算法 第五版 塞奇维克
+## 计算机网络：自顶向下 第八版
+## Unix网络编程
+## Unix高级环境编程
