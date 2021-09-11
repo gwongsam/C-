@@ -12,7 +12,7 @@ public:
 };
 
 template <typename Key, typename Value>
-class BST
+class BST :public Bitree<Key, Value>
 {
 public:
    int Size()
@@ -32,6 +32,15 @@ public:
    void Put(Key key, Value val)
    {
       root = Put(root, key, val);
+   }
+   Key Min()
+   {
+      return Min(root)->key;
+   }
+   Key Floor(Key key)
+   {
+      std::shared_ptr<Node> x = Floor(root, key);
+      return x == nullptr ? key : x->key;
    }
 private:
    size_t Size(std::shared_ptr<Node<Key, Value>> x)
@@ -78,6 +87,18 @@ private:
       x->N = Size(x->left) + size(x->right) + 1;
       
       return x;
+   }
+   std::shared_ptr<Node> Min(std::shared_ptr<Node> x)
+   {
+      return x->left == nullptr ? x : Min(x->left);
+   }
+   std::shared_ptr<Node> Floor(std::shared_ptr<Node> x, Key Key)
+   {
+      if (x == nullptr)
+      {
+         return nullptr;
+      }
+      
    }
 public:
    std::shared_ptr<Node<Key, Value>> root;

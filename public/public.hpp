@@ -88,9 +88,8 @@ public:
     {
         return std::chrono::steady_clock::now();
     }
-    static long long GetElapsedTime(std::chrono::_V2::steady_clock::time_point start, std::chrono::_V2::steady_clock::time_point end)
+    static long long GetElapsedTime(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end)
     {
         return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }
 };
-
