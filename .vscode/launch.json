@@ -8,8 +8,10 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/exe",
-            "args": [],
+            "program": "${workspaceFolder}/exe",
+            "args": [
+                "-std=c++2a"
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

@@ -1,65 +1,92 @@
+#pragma once
 #include <memory>
 #include <thread>
 #include <future>
+#include <iostream>
+#include <exception>
 #include "threadsafe_queue.hpp"
+#include "threads.hpp"
 
-class function_wrapper
+class FunctionWrapper
 {
-    struct impl_base
+    struct ImplBase
     {
         virtual void call() = 0;
-        virtual ~impl_base() {}
-    } std::unique_ptr<impl_base> impl;
+        virtual ~ImplBase() {}
+    };
+    std::unique_ptr<ImplBase> impl_;
     template <typename F>
-    struct impl_type : impl_base
+    struct impl_type : ImplBase
     {
-        F f;
-        impl_type(F &&f_) : f(std::move(f_)) {}
+        F f_;
+        impl_type(F &&f) : f_(std::move(f)) {}
+        void call() { f_(); }
     };
 
 public:
     template <typename F>
-    function_wrapper(F &&f) : impl(new impl_type<F>(std::move(f))) {}
-    void operator()() = default;
-    function_wrapper(function_wrapper &&other) : impl(std::move(other.impl)) {}
-    function_wrapper &operator=(function_wrapper &&other)
+    FunctionWrapper(F &&f) : impl_(new impl_type<F>(std::move(f))) {}
+    FunctionWrapper() = default;
+    FunctionWrapper(FunctionWrapper &&other) : impl_(std::move(other.impl_)) {}
+    // FunctionWrapper(const FunctionWrapper &) = delete;
+    // FunctionWrapper(FunctionWrapper &) = delete;
+    FunctionWrapper &operator=(const FunctionWrapper &) = delete;
+    FunctionWrapper &operator=(FunctionWrapper &&other)
     {
-        impl = std::move(other.impl);
+        impl_ = std::move(other.impl_);
         return *this;
     }
-    function_wrapper(const function_wrapper &) = delete;
-    function_wrapper(function_wrapper &) = delete;
-    function_wrapper &operator=(const function_wrapper &) = delete;
+    void operator()() { impl_->call(); }
+};
 
-    class thread_pool
+class thread_pool
+{
+    std::atomic_bool done_;
+    threadsafe_queue<FunctionWrapper> work_queue_;
+    std::vector<std::thread> threads_;
+    JoinThreads joiner_;
+    void worker_thread()
     {
-        threadsafe_queue<function_wrapper> work_queue;
-        void worker_thread()
+        while (!done_)
         {
-            while (!done)
+            FunctionWrapper task;
+            if (work_queue_.try_pop(task))
             {
-                function_wrapper task;
-                if (work_queue.try_pop(task))
-                {
-                    task()
-                }
-                else
-                {
-                    std::this_thread::yield();
-                }
+                task();
+            }
+            else
+            {
+                std::this_thread::yield();
             }
         }
+    }
 
-    public:
-        template <typename FunctionType>
-        std::future<typename std::result_of<FunctionType()>::type>
-        submit(FunctionType f)
+public:
+    thread_pool() :done_(false), joiner_(threads_)
+    {
+        unsigned const thread_count = std::thread::hardware_concurrency();
+        try
         {
-            typedef typename std::result_of<FunctionType()>::type result_type;
-            std::packaged_task<result_type> task(std::move(f));
-            std::future<result_type> res(task.get_future());
-            work_queue.push(std::move(task));
-            return res;
+            for (unsigned i = 0; i < thread_count; ++i)
+            {
+                threads_.emplace_back(&thread_pool::work_queue_, this);
+            }
         }
-    };
+        catch(const std::exception& e)
+        {
+            done_ = true;
+            std::cerr << e.what() << '\n';
+        }
+    }
+    ~thread_pool() { done_ = true; }
+    template <typename FunctionType>
+    std::future<typename std::result_of<FunctionType()>::type>
+    Submit(FunctionType f)
+    {
+        typedef typename std::result_of<FunctionType()>::type result_type;
+        std::packaged_task<result_type> task(std::move(f));
+        std::future<result_type> res(task.get_future());
+        work_queue_.push(std::move(task));
+        return res;
+    }
 };
