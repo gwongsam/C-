@@ -1,3 +1,4 @@
+#pragma once
 #include <memory>
 #include <vector>
 #include <iostream>
@@ -19,16 +20,7 @@ public:
         std::cout << std::endl;
         return 0;
     }
-    // virtual int Sort(std::vector<std::shared_ptr<Comparable>> &arr) = 0;
-    // virtual int Show(std::vector<std::shared_ptr<Comparable>> &arr)
-    // {
-    //     for (auto item : arr)
-    //     {
-    //         std::cout << *item << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     return 0;
-    // }
+
     virtual bool IsSorted(std::vector<Comparable> &arr)
     {
         for (size_t i = 0; i < arr.size() - 2; i++)
@@ -38,7 +30,7 @@ public:
                 return false;
             }
         }
-        
+
         return true;
     }
 };
@@ -70,28 +62,6 @@ public:
 
         return 0;
     }
-    // int Sort(std::vector<std::shared_ptr<Comparable>> &arr) override
-    // {
-    //     std::vector<unsigned long> bucket;
-    //     bucket.resize(arr.size(), 0);
-    //     for (size_t i = 0; i < arr.size(); i++)
-    //     {
-    //         if (*arr[i] < 100)
-    //         {
-    //             bucket[*arr[i]]++;
-    //         }
-    //     }
-    //     arr.clear();
-    //     for (size_t i = 0; i < bucket.size(); i++)
-    //     {
-    //         for (size_t j = 0; j < bucket[i]; j++)
-    //         {
-    //             arr.emplace_back(std::make_shared<int>(i));
-    //         }
-    //     }
-
-    //     return 0;
-    // }
 };
 
 template <typename Comparable>
@@ -116,13 +86,9 @@ public:
                 std::swap(arr[i], arr[smallest]);
             }
         }
-        
+
         return 0;
     }
-    // int Sort(std::vector<std::shared_ptr<Comparable>> &arr) override
-    // {
-    //     return 0;
-    // }
 };
 
 template <typename Comparable>
@@ -138,13 +104,9 @@ public:
                 std::swap(arr[j], arr[j - 1]);
             }
         }
-        
+
         return 0;
     }
-    // int Sort(std::vector<std::shared_ptr<Comparable>> &arr) override
-    // {
-    //     return 0;
-    // }
 };
 
 template <typename Comparable>
@@ -170,13 +132,9 @@ public:
             }
             h = h / 3;
         }
-        
+
         return 0;
     }
-    // int Sort(std::vector<std::shared_ptr<Comparable>> &arr) override
-    // {
-    //     return 0;
-    // }
 };
 
 template <typename Comparable>
@@ -188,30 +146,12 @@ public:
         aux.resize(arr.size());
         Sort(arr, 0, arr.size() - 1);
         aux.clear();
-        aux.shrink_to_fit();  
+        aux.shrink_to_fit();
         return 0;
     }
-    // int Sort(std::vector<Comparable> &arr) override
-    // {
-    //     size_t N = arr.size();
-    //     aux.resize(N);
-    //     for (size_t sz = 0; sz < N; sz = sz + sz)
-    //     {
-    //         for (size_t low = 0; low < N - sz; low += sz + sz)
-    //         {
-    //             Merge(arr, low, low + sz - 1, low + sz + sz - 1 < N - 1 ? low + sz + sz - 1 : N - 1);
-    //         }
-    //     }
-        
-    //     return 0;
-    // }
-    // int Sort(std::vector<std::shared_ptr<Comparable>> &arr) override
-    // {
-    //     return 0;
-    // }
 
 private:
-    int Sort(std::vector<Comparable>& arr, size_t low, size_t high)
+    int Sort(std::vector<Comparable> &arr, size_t low, size_t high)
     {
         if (high <= low)
         {
@@ -250,9 +190,10 @@ private:
                 arr[k] = aux[i++];
             }
         }
-        
+
         return 0;
     }
+
 private:
     std::vector<Comparable> aux;
 };
@@ -266,10 +207,6 @@ public:
         Sort(arr, 0, arr.size() - 1);
         return 0;
     }
-    // int Sort(std::vector<std::shared_ptr<Comparable>> &arr) override
-    // {
-    //     return 0;
-    // }
 
 private:
     int Sort(std::vector<Comparable> &arr, size_t low, size_t high)
@@ -281,7 +218,7 @@ private:
         size_t pivot = Partition(arr, low, high);
         Sort(arr, low, pivot - 1);
         Sort(arr, pivot + 1, high);
-        
+
         return 0;
     }
     size_t Partition(std::vector<Comparable> &arr, size_t low, size_t high)
@@ -305,7 +242,7 @@ private:
                     break;
                 }
             }
-            if (i >= j) 
+            if (i >= j)
             {
                 break;
             }
@@ -323,17 +260,22 @@ class Heapsort : public Sorting<Comparable>
 public:
     int Sort(std::vector<Comparable> &arr)
     {
-        // size_t N = arr.size();
-        // for (size_t k = 0; k < 1; k--)
-        // {
-        //     Sink(arr, k, N);
-        // }
-        // while (N > 1)
-        // {
-        //     std::swap(arr[1], arr[N--]);
-        //     Sink(arr, 1, N);
-        // }
-        
+        size_t n = arr.size();
+        for (size_t i = n / 2; i >= 1; i--)
+        {
+            Sink(arr, i, n);
+        }
+        while (n > 1)
+        {
+            std::swap(arr[1], arr[n--]);
+            Sink(arr, 1, n);
+        }
+
         return 0;
+    }
+
+private:
+    void Sink(std::vector<Comparable> &nums, size_t start, size_t end)
+    {
     }
 };

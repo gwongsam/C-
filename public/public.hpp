@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -7,9 +8,9 @@
 #include <regex>
 #include <chrono>
 
-class Public
+namespace Public
 {
-public:
+    // public:
     static int RandomInt(size_t sub = 0, size_t upper = 100)
     {
         static std::random_device rd;
@@ -26,7 +27,7 @@ public:
         }
         return std::move(values);
     }
-    static std::vector<std::string> ReadLine(std::string pwd)
+    static std::vector<std::string> ReadLines(std::string pwd)
     {
         std::vector<std::string> content;
         if (!std::filesystem::exists(pwd))
@@ -53,7 +54,7 @@ public:
         file.close();
         return std::move(content);
     }
-    static int WriteLine(std::vector<std::string> &content, std::string pwd)
+    static int WriteLines(std::vector<std::string> &content, std::string pwd)
     {
         // if (!std::filesystem::exists(pwd))
         // {
@@ -84,12 +85,88 @@ public:
         }
         return content;
     }
-    static std::chrono::_V2::steady_clock::time_point GetTimePoint()
+    // static std::chrono::_V2::steady_clock::time_point GetTimePoint()
+    // {
+    //     return std::chrono::steady_clock::now();
+    // }
+    // static long long GetElapsedTime(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end)
+    // {
+    //     return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    // }
+    class IO
     {
-        return std::chrono::steady_clock::now();
-    }
-    static long long GetElapsedTime(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end)
+    public:
+        static std::vector<std::string> ReadLines(std::string pwd)
+        {
+            std::vector<std::string> content;
+            if (!std::filesystem::exists(pwd))
+            {
+                return content;
+            }
+            std::filesystem::directory_entry entry(pwd);
+            if (entry.status().type() == std::filesystem::file_type::directory)
+            {
+                return content;
+            }
+
+            std::fstream file(pwd, std::ios::in | std::ios::binary);
+            if (!file.is_open())
+            {
+                return content;
+            }
+
+            std::string line;
+            while (std::getline(file, line))
+            {
+                content.emplace_back(std::move(line));
+            }
+            file.close();
+            return std::move(content);
+        }
+        static int WriteLines(std::vector<std::string> &content, std::string pwd)
+        {
+            // if (!std::filesystem::exists(pwd))
+            // {
+            //     std::filesystem::create_directory(pwd);
+            // }
+
+            std::ofstream file(pwd, std::ios::out | std::ios::binary | std::ios::app | std::ios::ate);
+            if (!file.is_open())
+            {
+                return -1;
+            }
+            for (std::string &line : content)
+            {
+                file << line << std::endl;
+            }
+            file.close();
+            return 0;
+        }
+    };
+}
+
+namespace Public
+{
+    class StopWatch
     {
-        return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-    }
-};
+    public:
+        std::chrono::steady_clock::time_point Start()
+        {
+            start_ = std::chrono::steady_clock::now();
+            return start_;
+        }
+        std::chrono::steady_clock::time_point Stop()
+        {
+            end_ = std::chrono::steady_clock::now();
+            return end_;
+        }
+        long long ElapsedMilliseconds()
+        {
+            long long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_ - start_).count();
+            return elapsed;
+        }
+
+        std::chrono::steady_clock::time_point start_;
+        std::chrono::steady_clock::time_point end_;
+    };
+}

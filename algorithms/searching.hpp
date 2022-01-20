@@ -1,15 +1,30 @@
 #include <memory>
 #include "structure.hpp"
 
-class binary_tree
+template<typename Comparable>
+int BiSearch(std::vector<Comparable>& nums, Comparable target)
 {
-public:
-    
-public:
-   std::shared_ptr<binary_tree> left;
-   std::shared_ptr<binary_tree> right;
+   // size_t left = 0;
+   // size_t right = nums.size();
+   // size_t pivet = len / 2;
+   // while(left < right)
+   // {
+   //    if (nums[pivet] < target)
+   //    {
+   //       left = pivet;
+   //    }
+   //    else if (target < nums[pivet])
+   //    {
+   //       right = pivet;
+   //    }
+   //    else
+   //    {
+   //       return pivet;
+   //    }
+   // }
    
-};
+   return -1;
+}
 
 template <typename Key, typename Value>
 class BST :public Bitree<Key, Value>
@@ -33,15 +48,15 @@ public:
    {
       root = Put(root, key, val);
    }
-   Key Min()
-   {
-      return Min(root)->key;
-   }
-   Key Floor(Key key)
-   {
-      std::shared_ptr<Node> x = Floor(root, key);
-      return x == nullptr ? key : x->key;
-   }
+   // Key Min()
+   // {
+      // return Min(root)->key;
+   // }
+   // Key Floor(Key key)
+   // {
+      // std::shared_ptr<Node> x = Floor(root, key);
+      // return x == nullptr ? key : x->key;
+   // }
 private:
    size_t Size(std::shared_ptr<Node<Key, Value>> x)
    {
@@ -88,18 +103,18 @@ private:
       
       return x;
    }
-   std::shared_ptr<Node> Min(std::shared_ptr<Node> x)
-   {
-      return x->left == nullptr ? x : Min(x->left);
-   }
-   std::shared_ptr<Node> Floor(std::shared_ptr<Node> x, Key Key)
-   {
-      if (x == nullptr)
-      {
-         return nullptr;
-      }
+   // std::shared_ptr<Node> Min(std::shared_ptr<Node> x)
+   // {
+      // return x->left == nullptr ? x : Min(x->left);
+   // }
+   // std::shared_ptr<Node> Floor(std::shared_ptr<Node> x, Key Key)
+   // {
+      // if (x == nullptr)
+      // {
+         // return nullptr;
+      // }
       
-   }
+   // }
 public:
    std::shared_ptr<Node<Key, Value>> root;
 };
