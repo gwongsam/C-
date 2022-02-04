@@ -35,10 +35,13 @@ public:
     std::string ToString() override
     {
         std::string str;
-        for (auto &item : priority_queue_)
+
+        size_t parent = 0;
+        while (parent * 2 < priority_queue_.size())
         {
-            str += std::to_string(item) + " ";
+            str += std::to_string(priority_queue_[parent]) + " ";
         }
+
         return std::move(str);
     }
 
