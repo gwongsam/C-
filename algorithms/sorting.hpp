@@ -36,27 +36,53 @@ public:
 };
 
 template <typename Comparable>
+class Bubble : public Sorting<Comparable>
+{
+public:
+    int Sort(std::vector<Comparable> &arr) override
+    {
+        size_t count = arr.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            for (size_t j = i; j < count; j++)
+            {
+                if (arr[i] > arr[j])
+                {
+                    std::swap(arr[i], arr[j]);
+                }
+            }
+        }
+
+        return 0;
+    }
+};
+
+template <typename Comparable>
 class Bucket : public Sorting<Comparable>
 {
 public:
     int Sort(std::vector<Comparable> &arr) override
     {
-        std::vector<std::pair<unsigned long, Comparable>> bucket;
-        bucket.resize(100, std::make_pair(0, arr[0]));
+        std::vector<Comparable> buckets[10];
+
         for (size_t i = 0; i < arr.size(); i++)
         {
-            if (arr[i] < 100)
-            {
-                bucket[i].first++;
-                bucket[i].second = arr[i];
-            }
+            size_t idx = arr[i] / 100000;
+            buckets[idx].emplace_back(arr[i]);
         }
-        arr.clear();
-        for (size_t i = 0; i < bucket.size(); i++)
+
+        for (size_t i = 0; i < 10; i++)
         {
-            for (size_t j = 0; j < bucket[i].first; j++)
+            Bubble<Comparable> quick;
+            quick.Sort(buckets[i]);
+        }
+
+        arr.clear();
+        for (size_t i = 0; i < 10; i++)
+        {
+            for (size_t j = 0; j < buckets[i].size(); j++)
             {
-                arr.emplace_back(bucket[i].second);
+                arr.emplace_back(buckets[i][j]);
             }
         }
 
@@ -70,7 +96,7 @@ class Selection : public Sorting<Comparable>
 public:
     int Sort(std::vector<Comparable> &arr) override
     {
-        int smallest = 0;
+        size_t smallest = 0;
         for (size_t i = 0; i < arr.size(); i++)
         {
             smallest = i;
@@ -277,5 +303,48 @@ public:
 private:
     void Sink(std::vector<Comparable> &nums, size_t start, size_t end)
     {
+    }
+};
+
+template <typename Comparable>
+class Counting : public Sorting<Comparable>
+{
+public:
+    int Sort(std::vector<Comparable> &arr) override
+    {
+        std::vector<std::pair<unsigned long, Comparable>> counter;
+        counter.resize(100000, std::make_pair(0, arr[0]));
+        for (size_t i = 0; i < arr.size(); i++)
+        {
+            if (arr[i] < 100000)
+            {
+                counter[arr[i]].first++;
+                counter[arr[i]].second = arr[i];
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        arr.clear();
+        for (size_t i = 0; i < counter.size(); i++)
+        {
+            for (size_t j = 0; j < counter[i].first; j++)
+            {
+                arr.emplace_back(counter[i].second);
+            }
+        }
+
+        return 0;
+    }
+};
+
+template <typename Comparable>
+class RadixSort : public RadixSort<Comparable>
+{
+public:
+    int Sort(std::vector<Comparable> &arr)
+    {
+        return 0;
     }
 };

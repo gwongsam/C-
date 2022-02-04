@@ -10,7 +10,24 @@
 
 namespace Public
 {
-    // public:
+    template <typename Number>
+    static Number Random(size_t sub = 0, size_t upper = 100)
+    {
+        static std::random_device rd;
+        static std::default_random_engine generator(rd());
+        static std::uniform_int_distribution<Number> distribution(sub, upper);
+        return std::move(distribution(generator));
+    }
+    template <typename Number>
+    static std::vector<Number> Randoms(size_t quantity, size_t sub = 0, size_t upper = 100)
+    {
+        std::vector<Number> values;
+        for (size_t i = 0; i < quantity; i++)
+        {
+            values.emplace_back(Random<Number>(sub, upper));
+        }
+        return std::move(values);
+    }
     static int RandomInt(size_t sub = 0, size_t upper = 100)
     {
         static std::random_device rd;
@@ -166,6 +183,7 @@ namespace Public
             return elapsed;
         }
 
+    private:
         std::chrono::steady_clock::time_point start_;
         std::chrono::steady_clock::time_point end_;
     };

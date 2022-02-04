@@ -70,43 +70,19 @@ Task ResumingOnNewThread(std::jthread &out)
 
 int main()
 {
-    // Digraph digraph;
-    // digraph.AddEdge(1, 2);
-    // digraph.AddEdge(2, 3);
-    // digraph.AddEdge(1, 3);
-    // // digraph.AddEdge(3, 1);
-    // string str = digraph.ToString();
-    // cout << str;
-    // DirectedDFS dfs(digraph, 2);
-    // cout << dfs.Marked(1) << endl;
-    // auto arr = Public::IO::ReadLines("key_indexed.txt");
-    // vector<pair<size_t, string>> students;
-    // for (auto &item : arr)
-    // {
-    //     auto vec = Public::SplitDelim(item, " ");
-    //     if (vec.size() < 2)
-    //     {
-    //         continue;
-    //     }
-    //     pair<size_t, string> p = make_pair(stoi(vec[1]), vec[0]);
-    //     students.emplace_back(p);
-    // }
-    // for (auto &item : students)
-    // {
-    //     cout << item.first << " " << item.second << endl;
-    // }
-    // KeyIndexed ki;
-    // ki.Counting(students, 4);
-    // for (auto &item : students)
-    // {
-    //     cout << item.second << " " << item.first << endl;
-    // }
-    std::vector<std::string> arr = Public::IO::ReadLines("licence_plate.txt");
-    LSD lsd;
-    lsd.Sort(arr, 7);
-    // for (auto &item : arr)
-    // {
-    //     cout << item << endl;
-    // }
+    MaxPQ<int> pq;
+
+    auto array = Public::Randoms<int>(10, 0, 10);
+    Public::StopWatch watch;
+    watch.Start();
+    for (auto item : array)
+    {
+        pq.Insert(item);
+    }
+    watch.Stop();
+
+    cout << pq.ToString() << endl;
+
+    cout << "Caculate finish in " << watch.ElapsedMilliseconds() << " ms." << endl;
     return 0;
 }
