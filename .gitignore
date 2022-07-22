@@ -1,4 +1,4 @@
-./build
-./exe
-./tcp_server_client
-./Myhexin
+build/
+exe
+tcp_server_client/
+Myhexin/
