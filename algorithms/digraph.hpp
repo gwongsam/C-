@@ -8,13 +8,14 @@
 using namespace std;
 using namespace interface;
 
-class Digraph : public IConvertible {
+template <typename Node>
+class Digraph {
  public:
   Digraph() {}
   Digraph(int v) {}
   size_t Vertices() { return adj_list_.size(); }
-  vector<size_t> Vertices2() {
-    vector<size_t> vec;
+  vector<Node> Vertices2() {
+    vector<Node> vec;
     for (auto item : adj_list_) {
       vec.emplace_back(item.first);
     }
@@ -28,43 +29,63 @@ class Digraph : public IConvertible {
     return size;
   }
 
-  void AddEdge(size_t v, size_t w) {
+  void AddEdge(Node v, Node w) {
     if (!adj_list_.contains(v)) {
-      unordered_set<size_t> conn{w};
+      unordered_set<Node> conn{w};
       adj_list_.emplace(make_pair(v, conn));
       return;
     }
     adj_list_[v].emplace(w);
   }
 
-  unordered_set<size_t> Adj(size_t v) { return adj_list_[v]; }
-
-  string ToString() override {
-    string result;
-    for (auto vertices : adj_list_) {
-      result += std::to_string(vertices.first);
-      for (auto edge : vertices.second) {
-        result += " " + std::to_string(edge);
-      }
-      result += "\r\n";
-    }
-    return std::move(result);
-  }
+  unordered_set<Node> Adj(Node v) { return adj_list_[v]; }
+  unordered_map<Node, unordered_set<Node>> GetGraph() { return adj_list_; }
 
  private:
-  unordered_map<size_t, unordered_set<size_t>> adj_list_;
+  unordered_map<Node, unordered_set<Node>> adj_list_;
 };
 
+namespace cvt {
+template <typename Node>
+string DiNumericToString(Digraph<Node> &g) {
+  string result;
+  auto adj_list_ = g.GetGraph();
+  for (auto vertices : adj_list_) {
+    result += to_string(vertices.first);
+    for (auto edge : vertices.second) {
+      result += " " + to_string(edge);
+    }
+    result += "\r\n";
+  }
+  return std::move(result);
+}
+
+// template <typename Node>
+// string DiStringToString(Digraph<Node> &g) {
+//   string result;
+//   auto adj_list_ = g.GetGraph();
+//   for (auto vertices : adj_list_) {
+//     result += std::to_string(vertices.first);
+//     for (auto edge : vertices.second) {
+//       result += " " + std::to_string(edge);
+//     }
+//     result += "\r\n";
+//   }
+//   return std::move(result);
+// }
+}  // namespace cvt
+
+template <typename Node>
 class DirectedDFS {
  public:
-  DirectedDFS(Digraph &g, size_t s) { DFS(g, s); }
+  DirectedDFS(Digraph<Node> &g, Node s) { DFS(g, s); }
 
-  bool Marked(size_t v) { return marked_[v]; }
+  bool Marked(Node v) { return marked_[v]; }
 
  private:
-  void DFS(Digraph &g, size_t v) {
+  void DFS(Digraph<Node> &g, Node v) {
     marked_[v] = true;
-    unordered_set<size_t> adj = g.Adj(v);
+    unordered_set<Node> adj = g.Adj(v);
     for (auto &w : adj) {
       if (!marked_[w]) {
         DFS(g, w);
@@ -73,13 +94,14 @@ class DirectedDFS {
   }
 
  private:
-  unordered_map<size_t, bool> marked_;
+  unordered_map<Node, bool> marked_;
 };
 
+template <typename Node>
 class DirectedCycle {
  public:
-  DirectedCycle(Digraph &G) {
-    vector<size_t> vertices = G.Vertices2();
+  DirectedCycle(Digraph<Node> &G) {
+    vector<Node> vertices = G.Vertices2();
     for (auto v : vertices) {
       if (!marked[v]) {
         DFS(G, v);
@@ -90,7 +112,7 @@ class DirectedCycle {
   bool HasCycle() { return cycle.size(); }
 
  private:
-  void DFS(Digraph &G, size_t v) {
+  void DFS(Digraph<Node> &G, Node v) {
     onStack[v] = true;
     marked[v] = true;
     auto adj = G.Adj(v);
@@ -101,8 +123,8 @@ class DirectedCycle {
         edgeTo[w] = v;
         DFS(G, w);
       } else if (onStack[w]) {
-        cycle = stack<size_t>();
-        for (size_t x = v; x != w; x = edgeTo[x]) {
+        cycle = stack<Node>();
+        for (Node x = v; x != w; x = edgeTo[x]) {
           cycle.emplace(x);
         }
         cycle.emplace(w);
@@ -113,8 +135,8 @@ class DirectedCycle {
   }
 
  private:
-  unordered_map<size_t, bool> marked;
-  unordered_map<size_t, size_t> edgeTo;
-  unordered_map<size_t, bool> onStack;
-  stack<size_t> cycle;
+  unordered_map<Node, bool> marked;
+  unordered_map<Node, Node> edgeTo;
+  unordered_map<Node, bool> onStack;
+  stack<Node> cycle;
 };
