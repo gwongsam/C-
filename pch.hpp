@@ -9,7 +9,9 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <shared_mutex>
+#include <stack>
 #include <stdexcept>
 #include <string>
 #include <string_view>
