@@ -101,6 +101,15 @@ std::vector<std::string> SplitDelim(std::string &src, std::string delim) {
   return std::move(content);
 }
 
+std::vector<string> Split(const std::string &src, const std::string &delim) {
+  std::vector<string> sub;
+  for (const auto word :
+       std::views::split(std::string_view(src), std::string_view(delim))) {
+    sub.emplace_back(word.begin(), word.end());
+  }
+  return sub;
+}
+
 std::string FileToString(std::string pwd) {
   if (!std::filesystem::exists(pwd)) {
     return "";
@@ -116,17 +125,17 @@ bool IsAlphabet(const char a) {
 }
 
 std::string w2s(const std::wstring &wide) {
-  std::string str;
-  std::transform(wide.begin(), wide.end(), std::back_inserter(str),
-                 [](unsigned short c) { return char(c); });
-  return str;
-  // static std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-  // return std::move(myconv.to_bytes(wide));
+  // std::string str;
+  // std::transform(wide.begin(), wide.end(), std::back_inserter(str),
+  //                [](unsigned short c) { return char(c); });
+  // return str;
+  static std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+  return std::move(cvt.to_bytes(wide));
 }
 
 std::wstring s2w(const std::string &str) {
-  static std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-  return myconv.from_bytes(str);
+  static std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+  return cvt.from_bytes(str);
 }
 
 class IO {
