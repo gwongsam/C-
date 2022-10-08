@@ -33,4 +33,5 @@
 #include "leetcode/array.hpp"
 #include "leetcode/others.hpp"
 #include "leetcode/string.hpp"
+#include "pattern/pattern.hpp"
 #include "public/public.hpp"
