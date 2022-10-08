@@ -3,67 +3,60 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+
 template <typename T>
 class threadsafe_queue {
  private:
-  mutable std::mutex mut_;
-  std::queue<T> data_queue_;
-  std::condition_variable data_cond_;
+  struct node {
+    std::shared_ptr<T> data;
+    std::unique_ptr<node> next;
+  };
+  std::mutex head_mutex;
+  std::unique_ptr<node> head;
+  std::mutex tail_mutex;
+  node *tail;
+
+ private:
+  node *get_tail() {
+    std::lock_guard<std::mutex> tail_lock(tail_mutex);
+    return tail;
+  }
+
+  std::unique_ptr<node> pop_head() {
+    std::lock_guard<std::mutex> head_lock(head_mutex);
+
+    if (head.get() == get_tail()) {
+      return nullptr;
+    }
+    std::unique_ptr<node> old_head = std::move(head);
+    head = std::move(old_head->next);
+    return old_head;
+  }
 
  public:
-  threadsafe_queue() {}
-  threadsafe_queue(const threadsafe_queue &other) {
-    std::lock_guard<std::mutex> lk(other.mut_);
-    data_queue_ = other.data_queue_;
-  }
-  threadsafe_queue &operator=(const threadsafe_queue &) = delete;
-  ~threadsafe_queue(){};
-  void push(T new_value) {
-    std::lock_guard<std::mutex> lk(mut_);
-    data_queue_.push(new_value);
-    data_cond_.notify_one();
-  }
-  bool try_pop(T &value) {
-    std::lock_guard<std::mutex> lk(mut_);
-    if (data_queue_.empty()) {
-      return false;
-    }
-    value = data_queue_.front();
-    data_queue_.pop();
-    return true;
-  }
+  threadsafe_queue() : head(new node), tail(head.get()) {}
+  threadsafe_queue(const threadsafe_queue &other) = delete;
+  threadsafe_queue &operator=(const threadsafe_queue &other) = delete;
+
   std::shared_ptr<T> try_pop() {
-    std::lock_guard<std::mutex> lk(mut_);
-    if (data_queue_.empty()) {
-      return std::shared_ptr<T>();
-    }
-    std::shared_ptr<T> res(std::make_shared<T>(data_queue_.front()));
-    data_queue_.pop();
-    return res;
+    std::unique_ptr<node> old_head = pop_head();
+    return old_head ? old_head->data : std::shared_ptr<T>();
   }
-  void wait_and_pop(T &value) {
-    std::unique_lock<std::mutex> lk(mut_);
-    data_cond_.wait(lk, [this] { return !data_queue_.empty(); });
-    value = data_queue_.front();
-    data_queue_.pop();
-  }
-  std::shared_ptr<T> wait_and_pop() {
-    std::unique_lock<std::mutex> lk(mut_);
-    // data_cond_.wait(lk, [this] { return !data_queue.empty(); });
-    std::shared_ptr<T> res(std::make_shared<T>(data_queue_.front()));
-    // value = data_queue.front();
-    data_queue_.pop();
-    return res;
-  }
-  bool empty() const {
-    std::lock_guard<std::mutex> lk(mut_);
-    return data_queue_.empty();
+
+  void push(T new_value) {
+    std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
+    std::unique_ptr<node> p(new_value);
+    node *const new_tail = p.get();
+    std::lock_guard<std::mutex> tail_lock(tail_mutex);
+    tail->data = new_data;
+    tail->next = std::move(p);
+    tail = new_tail;
   }
 };
 
-namespace algo {
+namespace task {
 template <typename T>
-class queue {
+class Queue {
  private:
   struct node {
     std::shared_ptr<T> data;
@@ -74,9 +67,9 @@ class queue {
   node *tail;
 
  public:
-  queue() : head(new node), tail(head.get()) {}
-  queue(const &queue other) = delete;
-  queue &operator=(const queue &other) = delete;
+  Queue() : head(new node), tail(head.get()) {}
+  Queue(const &Queue other) = delete;
+  Queue &operator=(const Queue &other) = delete;
 
   std::shared_ptr<T> try_pop() {
     if (head.get() == tail) {
@@ -97,4 +90,4 @@ class queue {
     tail = new_tail;
   }
 };
-}  // namespace algo
+}  // namespace task
