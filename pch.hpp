@@ -27,6 +27,7 @@
 #include "algorithms/string.hpp"
 #include "algorithms/structure.hpp"
 #include "concurrency/lock_free_stack.hpp"
+#include "concurrency/lookup_table.hpp"
 #include "concurrency/thread_pool.hpp"
 #include "concurrency/threadsafe_queue.hpp"
 #include "concurrency/threadsafe_stack.hpp"

@@ -68,8 +68,8 @@ class Queue {
 
  public:
   Queue() : head(new node), tail(head.get()) {}
-  Queue(const &Queue other) = delete;
-  Queue &operator=(const Queue &other) = delete;
+  Queue(Queue const &other) = delete;
+  Queue &operator=(Queue const &other) = delete;
 
   std::shared_ptr<T> try_pop() {
     if (head.get() == tail) {
