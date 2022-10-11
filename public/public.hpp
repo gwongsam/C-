@@ -210,4 +210,56 @@ class StopWatch {
   std::chrono::steady_clock::time_point start_;
   std::chrono::steady_clock::time_point end_;
 };
+
+namespace calendar {
+using namespace std::chrono;
+
+int Year(const time_point<system_clock> now = system_clock::now()) {
+  const year_month_day ymd{floor<days>(now)};
+  return static_cast<int>(ymd.year());
+}
+
+unsigned Month(const time_point<system_clock> now = system_clock::now()) {
+  const year_month_day ymd{floor<days>(now)};
+  return static_cast<unsigned>(ymd.month());
+}
+
+unsigned Day(const time_point<system_clock> now = system_clock::now()) {
+  const year_month_day ymd{floor<days>(now)};
+  return static_cast<unsigned>(ymd.day());
+}
+
+int64_t Hour(const time_point<system_clock> now = system_clock::now()) {
+  std::chrono::duration<int64_t, std::nano> ss = now.time_since_epoch();
+  auto hh = std::chrono::floor<std::chrono::days>(ss);
+  std::chrono::hh_mm_ss<std::chrono::milliseconds> tod{
+      std::chrono::duration_cast<std::chrono::milliseconds>(ss - hh)};
+  return tod.hours().count();
+}
+
+int64_t Minute(const time_point<system_clock> now = system_clock::now()) {
+  std::chrono::duration<int64_t, std::nano> ss = now.time_since_epoch();
+  auto hh = std::chrono::floor<std::chrono::days>(ss);
+  std::chrono::hh_mm_ss<std::chrono::milliseconds> tod{
+      std::chrono::duration_cast<std::chrono::milliseconds>(ss - hh)};
+  return tod.minutes().count();
+}
+
+int64_t Second(const time_point<system_clock> now = system_clock::now()) {
+  std::chrono::duration<int64_t, std::nano> ss = now.time_since_epoch();
+  auto hh = std::chrono::floor<std::chrono::days>(ss);
+  std::chrono::hh_mm_ss<std::chrono::milliseconds> tod{
+      std::chrono::duration_cast<std::chrono::milliseconds>(ss - hh)};
+  return tod.seconds().count();
+}
+
+int64_t Subsecond(const time_point<system_clock> now = system_clock::now()) {
+  std::chrono::duration<int64_t, std::nano> ss = now.time_since_epoch();
+  auto hh = std::chrono::floor<std::chrono::days>(ss);
+  std::chrono::hh_mm_ss<std::chrono::milliseconds> tod{
+      std::chrono::duration_cast<std::chrono::milliseconds>(ss - hh)};
+  return tod.subseconds().count();
+}
+
+}  // namespace calendar
 }  // namespace aux
