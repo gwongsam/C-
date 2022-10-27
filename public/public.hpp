@@ -101,8 +101,9 @@ std::vector<std::string> SplitDelim(std::string &src, std::string delim) {
   return std::move(content);
 }
 
-std::vector<string> Split(const std::string &src, const std::string &delim) {
-  std::vector<string> sub;
+std::vector<std::string> Split(const std::string &src,
+                               const std::string &delim) {
+  std::vector<std::string> sub;
   for (const auto word :
        std::views::split(std::string_view(src), std::string_view(delim))) {
     sub.emplace_back(word.begin(), word.end());
