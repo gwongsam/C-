@@ -82,5 +82,8 @@
     "python.formatting.provider": "black",
     "C_Cpp.clang_format_fallbackStyle": "Google",
     "files.autoGuessEncoding": true,
-    "editor.fontFamily": "'Courier New', Consolas, monospace"
+    "editor.fontFamily": "'Courier New', Consolas, monospace",
+    "files.watcherExclude": {
+        "**/Myhexin/**": true
+    }
 }

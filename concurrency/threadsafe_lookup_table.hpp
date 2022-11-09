@@ -86,4 +86,19 @@ class threadsafe_lookup_table {
   }
 
   void remove_mapping(Key const& key) { get_bucket(key).remove_mapping(key); }
+
+  // std::map<Key, Value> get_map() const {
+  //   std::vector<std::unique_lock<std::shared_mutex>> locks;
+  //   for (unsigned i = 0; i < buckets.size(); ++i) {
+  //     locks.push_back(std::unique_lock<std::shared_mutex>(buckets[i].mutex));
+  //   }
+  //   std::map<Key, Value> res;
+  //   for (unsigned i = 0; i < buckets.size(); ++i) {
+  //     for (bucket_type::bucket_iterator it = buckets[i].data.begin();
+  //          it != buckets[i].data.end(); + it) {
+  //       res.insert(*it);
+  //     }
+  //   }
+  //   return res;
+  // }
 };
