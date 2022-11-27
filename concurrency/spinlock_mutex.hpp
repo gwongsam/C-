@@ -1,21 +1,14 @@
-#include <mutex>
 #include <atomic>
+#include <mutex>
 
-class SpinlockMutex
-{
-public:
-    SpinlockMutex() :flag(ATOMIC_FLAG_INIT){}
-    void Lock()
-    {
-        while (flag.test_and_set(std::memory_order_acquire))
-        {
-            /* code */
-        }
+class spinlock_mutex {
+  std::atomic_flag flag;
+
+ public:
+  spinlock_mutex() : flag(ATOMIC_FLAG_INIT) {}
+  void lock() {
+    while (flag.test_and_set(std::memory_order_acquire)) {
     }
-    void Unlock()
-    {
-        flag.clear(std::memory_order_release);
-    }
-private:
-    std::atomic_flag flag;
+  }
+  void unlock() { flag.clear(std::memory_order_release); }
 };
