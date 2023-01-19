@@ -104,10 +104,20 @@ std::vector<std::string> SplitDelim(std::string &src, std::string delim) {
 std::vector<std::string> Split(const std::string &src,
                                const std::string &delim) {
   std::vector<std::string> sub;
-  for (const auto word :
-       std::views::split(std::string_view(src), std::string_view(delim))) {
-    sub.emplace_back(word.begin(), word.end());
+  // for (const auto word :
+  //      std::views::split(std::string_view(src), std::string_view(delim))) {
+  //   sub.emplace_back(word.begin(), word.end());
+  // }
+
+  size_t quick = 0;
+  size_t slow = 0;
+  std::string token;
+  while ((quick = src.find(delim, slow)) != std::string::npos) {
+    token = src.substr(slow, quick - slow);
+    sub.emplace_back(token);
+    slow = quick + delim.size();
   }
+
   return sub;
 }
 
