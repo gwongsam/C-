@@ -8,8 +8,8 @@ template <typename T>
 class threadsafe_queue {
  private:
   struct node {
-    std::shared_ptr<T> data;
-    std::unique_ptr<node> next;
+    std::shared_ptr<T> data = nullptr;
+    std::unique_ptr<node> next = nullptr;
   };
   std::mutex head_mutex;
   std::unique_ptr<node> head;
@@ -29,7 +29,7 @@ class threadsafe_queue {
 
   bool try_pop(T &value) {
     std::unique_ptr<node> const old_head = try_pop_head(value);
-    return old_head;
+    return old_head.get() != nullptr;
   }
 
   std::shared_ptr<T> wait_and_pop() {
@@ -99,47 +99,47 @@ class threadsafe_queue {
   std::unique_ptr<node> try_pop_head(T &value) {
     std::lock_guard<std::mutex> head_lock(head_mutex);
     if (head.get() == get_tail()) {
-      return std::unique_ptr<node>();
+      return std::unique_ptr<node>(nullptr);
     }
     value = std::move(*head->data);
     return pop_head();
   }
 };
 
-namespace task {
-template <typename T>
-class Queue {
- private:
-  struct node {
-    std::shared_ptr<T> data;
-    std::unique_ptr<node> next;
-    node(T data_) : data(std::move(data_)) {}
-  };
-  std::unique_ptr<node> head;
-  node *tail;
+// namespace task {
+// template <typename T>
+// class Queue {
+//  private:
+//   struct node {
+//     std::shared_ptr<T> data;
+//     std::unique_ptr<node> next;
+//     node(T data_) : data(std::move(data_)) {}
+//   };
+//   std::unique_ptr<node> head;
+//   node *tail;
 
- public:
-  Queue() : head(new node), tail(head.get()) {}
-  Queue(Queue const &other) = delete;
-  Queue &operator=(Queue const &other) = delete;
+//  public:
+//   Queue() : head(new node), tail(head.get()) {}
+//   Queue(Queue const &other) = delete;
+//   Queue &operator=(Queue const &other) = delete;
 
-  std::shared_ptr<T> try_pop() {
-    if (head.get() == tail) {
-      return shared_ptr<T>();
-    }
-    std::shared_ptr<T> const res(head->data);
-    std::unique_ptr<node> old_head = std::move(head);
-    head = std::move(old_head->next);
-    return res;
-  }
+//   std::shared_ptr<T> try_pop() {
+//     if (head.get() == tail) {
+//       return shared_ptr<T>();
+//     }
+//     std::shared_ptr<T> const res(head->data);
+//     std::unique_ptr<node> old_head = std::move(head);
+//     head = std::move(old_head->next);
+//     return res;
+//   }
 
-  void push(T new_value) {
-    std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
-    std::unique_ptr<node> p(new node);
-    tail->data = new_data;
-    node *const new_tail = p.get();
-    tail->next = std::move(p);
-    tail = new_tail;
-  }
-};
-}  // namespace task
+//   void push(T new_value) {
+//     std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
+//     std::unique_ptr<node> p(new node);
+//     tail->data = new_data;
+//     node *const new_tail = p.get();
+//     tail->next = std::move(p);
+//     tail = new_tail;
+//   }
+// };
+// }  // namespace task
