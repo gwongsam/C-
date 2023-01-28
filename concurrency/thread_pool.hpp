@@ -13,12 +13,12 @@
 class thread_pool {
  private:
   std::atomic_bool done;
-  threadsafe_queue<std::function<void()>> work_queue;
+  threadsafe_queue<function_wrapper> work_queue;
   std::vector<std::thread> threads;
   join_threads joiner;
   void worker_thread() {
     while (!done) {
-      std::function<void()> task;
+      function_wrapper task;
       if (work_queue.try_pop(task)) {
         task();
       } else {
@@ -42,8 +42,19 @@ class thread_pool {
 
   ~thread_pool() { done = true; }
 
+  // template <typename FunctionType>
+  // void submit(FunctionType f) {
+  //   work_queue.push(std::function<void()>(f));
+  // }
+
   template <typename FunctionType>
-  void submit(FunctionType f) {
-    work_queue.push(std::function<void()>(f));
+  std::future<typename std::result_of<FunctionType()>::type> submit(
+      FunctionType f) {
+    typedef typename std::result_of<FunctionType()>::type result_type;
+
+    std::packaged_task<result_type()> task(std::move(f));
+    std::future<result_type> res(task.get_future());
+    work_queue.push(std::move(task));
+    return res;
   }
 };
