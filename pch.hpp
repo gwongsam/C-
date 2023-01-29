@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <ranges>
 #include <shared_mutex>
 #include <stack>
