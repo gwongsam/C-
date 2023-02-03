@@ -90,5 +90,6 @@
     "files.autoSave": "onFocusChange",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
-    "cmake.sourceDirectory": "${workspaceFolder}/TimeWheel"
+    "cmake.sourceDirectory": "${workspaceFolder}/.",
+    "git.ignoreLimitWarning": true
 }
