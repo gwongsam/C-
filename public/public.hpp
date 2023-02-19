@@ -131,6 +131,27 @@ std::string FileToString(std::string pwd) {
   return std::move(content);
 }
 
+std::vector<std::byte> FileToByte(const std::string &pwd) {
+  std::vector<std::byte> result;
+  std::ifstream ifs(pwd, std::ios::binary);
+  if (ifs.is_open()) {
+    auto file_size = ifs.seekg(0, std::ios_base::end).tellg();
+    ifs.seekg(0, std::ios_base::beg);
+    result.resize(file_size);
+    ifs.read((char *)result.data(), file_size);
+    ifs.close();
+  }
+  return result;
+}
+
+void ByteToFile(const std::string &pwd, std::vector<std::byte> &bytes) {
+  ofstream ofs(pwd, std::ios::binary);
+  if (ofs.is_open()) {
+    ofs.write((char *)bytes.data(), bytes.size());
+    ofs.close();
+  }
+}
+
 bool IsAlphabet(const char a) {
   return ('a' <= a && a <= 'z') || ('A' <= a && a <= 'Z');
 }
