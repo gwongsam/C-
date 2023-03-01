@@ -145,7 +145,7 @@ std::vector<std::byte> FileToByte(const std::string &pwd) {
 }
 
 void ByteToFile(const std::string &pwd, std::vector<std::byte> &bytes) {
-  ofstream ofs(pwd, std::ios::binary);
+  std::ofstream ofs(pwd, std::ios::binary);
   if (ofs.is_open()) {
     ofs.write((char *)bytes.data(), bytes.size());
     ofs.close();
