@@ -77,7 +77,18 @@
         "queue": "cpp",
         "stack": "cpp",
         "span": "cpp",
-        "hash_map": "cpp"
+        "hash_map": "cpp",
+        "csignal": "cpp",
+        "any": "cpp",
+        "strstream": "cpp",
+        "cinttypes": "cpp",
+        "complex": "cpp",
+        "source_location": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp",
+        "forward_list": "cpp",
+        "cfenv": "cpp",
+        "valarray": "cpp"
     },
     "cmake.configureOnOpen": false,
     "python.formatting.provider": "black",
@@ -90,6 +101,6 @@
     "files.autoSave": "onFocusChange",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
-    "cmake.sourceDirectory": "${workspaceFolder}/.",
+    "cmake.sourceDirectory": "/home/ubuntu/git/Cplusplus",
     "git.ignoreLimitWarning": true
 }
