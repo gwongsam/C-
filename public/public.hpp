@@ -49,6 +49,23 @@ std::vector<int> RandomInts(size_t quantity, size_t sub = 0,
   return std::move(values);
 }
 
+bool EvenlyDivisible(double a, double b, double tolerance = 1e-6) {
+  // double quotient = a / b;
+
+  // // 计算四舍五入后的整数商
+  // double rounded_quotient = std::round(quotient);
+
+  // // 计算整数商与原始a之间的差值
+  // double difference = std::abs(a - rounded_quotient * b);
+
+  // return difference < tolerance;
+  double c = a / b;
+  double d = std::remainder(a, b);
+  bool is_exact = std::isnormal(c);
+  bool is_approximately_exact = std::abs(d) < tolerance;
+  return is_exact || is_approximately_exact;
+}
+
 std::vector<std::string> ReadLines(std::string pwd) {
   std::vector<std::string> content;
   if (!std::filesystem::exists(pwd)) {
