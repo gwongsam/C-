@@ -22,4 +22,5 @@
 #include "concurrency/threadsafe_list.hpp"
 #include "public/public.hpp"
 #include "public/timer.hpp"
+#include "server/asio_server.hpp"
 #include "snappy.h"
