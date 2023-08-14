@@ -16,6 +16,9 @@ project(
   VERSION 1.0
   LANGUAGES CXX)
 
+include_directories(${CMAKE_SOURCE_DIR}/openssl)
+set(CMAKE_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/openssl)
+
 # If you set any CMAKE_ variables, that can go here.
 # (But usually don't do this, except maybe for C++ standard)
 
@@ -37,3 +40,5 @@ add_executable(exe main.cpp)
 # Make sure you link your targets with this command. It can also link libraries and
 # even flags, so linking a target that does not exist will not give a configure-time error.
 target_link_libraries(exe ${CMAKE_SOURCE_DIR}/libsnappy.a)
+target_link_libraries(exe ${CMAKE_SOURCE_DIR}/libcrypto.a)
+target_link_libraries(exe ${CMAKE_SOURCE_DIR}/libssl.a)
