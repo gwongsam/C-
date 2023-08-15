@@ -24,3 +24,5 @@
 #include "public/public.hpp"
 #include "public/timer.hpp"
 #include "snappy.h"
+
+using namespace std;
