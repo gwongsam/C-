@@ -1,29 +1,46 @@
 #pragma once
 #include <atomic>
+#include <iostream>
 #include <memory>
 
 template <typename T>
-class lock_free_stack {
+class LockFreeStack {
  private:
-  struct node {
-    std::shared_ptr<T> data;
-    node* next;
-    node(T const& data_) : data(std::make_shared<T>(data_)) {}
+  struct Node {
+    T data;
+    Node* next;
+    Node(const T& data) : data(data), next(nullptr) {}
   };
-  std::atomic<node*> head;
+
+  std::atomic<Node*> head;
 
  public:
-  void push(T const& data) {
-    node* const new_node = new node(data);
-    new_node->next = head.load();
-    while (!head.compare_exchange_weak(new_node->next, new_node)) {
+  LockFreeStack() : head(nullptr) {}
+
+  ~LockFreeStack() {
+    while (Node* oldHead = head.load()) {
+      head.store(oldHead->next);
+      delete oldHead;
     }
   }
 
-  std::shared_ptr<T> pop() {
-    node* old_head = head.load();
-    while (old_head && !head.compare_exchange_weak(old_head, old_head->next)) {
+  void push(const T& data) {
+    Node* newNode = new Node(data);
+    newNode->next = head.load();
+    while (!head.compare_exchange_weak(newNode->next, newNode))
+      ;  // CAS loop
+  }
+
+  bool pop(T& result) {
+    Node* currentHead = head.load();
+    while (currentHead &&
+           !head.compare_exchange_weak(currentHead, currentHead->next))
+      ;  // CAS loop
+    if (currentHead) {
+      result = currentHead->data;
+      delete currentHead;
+      return true;
     }
-    return old_head ? old_head->data : std::shared_ptr<T>();
+    return false;
   }
 };

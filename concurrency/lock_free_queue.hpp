@@ -2,49 +2,48 @@
 #include <memory>
 
 template <typename T>
-class lock_free_queue {
+class LockFreeQueue {
  private:
-  struct node {
-    std::shared_ptr<T> data;
-    node *next;
-    node() : next(nullptr) {}
+  struct Node {
+    T data;
+    Node* next;
+    Node(const T& data) : data(data), next(nullptr) {}
   };
-  std::atomic<node *> head;
-  std::atomic<node *> tail;
-  node *pop_head() {
-    node *const old_head = head.load();
-    if (old_head == tail.load()) {
-      return nullptr;
-    }
-    head.store(old_head->next);
-    return old_head;
-  }
+
+  std::atomic<Node*> head;
+  std::atomic<Node*> tail;
 
  public:
-  lock_free_queue() : head(new node), tail(head.load()) {}
-  lock_free_queue(const lock_free_queue &other) = delete;
-  lock_free_queue &operator=(const lock_free_queue &other) = delete;
-  ~lock_free_queue() {
-    while (node *const old_head = head.load()) {
-      head.store(old_head->next);
-      delete old_head;
+  LockFreeQueue() : head(nullptr), tail(nullptr) {}
+
+  ~LockFreeQueue() {
+    while (Node* oldHead = head.load()) {
+      head.store(oldHead->next);
+      delete oldHead;
     }
   }
-  std::shared_ptr<T> pop() {
-    node *old_head = pop_head();
-    if (!old_head) {
-      return std::shared_ptr<T>();
+
+  void enqueue(const T& data) {
+    Node* newNode = new Node(data);
+    newNode->next = nullptr;
+    Node* oldTail = tail.exchange(newNode);
+    if (oldTail) {
+      oldTail->next = newNode;
+    } else {
+      // Queue was empty, update head to newNode
+      head.store(newNode);
     }
-    std::shared_ptr<T> const res(old_head->data);
-    delete old_head;
-    return res;
   }
-  void push(T nre_value) {
-    std::shared_ptr<T> new_data(std::make_shared<T>(new_value));
-    node *p = new node;
-    node *const old_tail = tail.load();
-    old_tail->data.swap(new_data);
-    old_tail->next = p;
-    tail.store(p);
+
+  bool dequeue(T& result) {
+    Node* currentHead = head.load();
+    while (currentHead) {
+      if (head.compare_exchange_weak(currentHead, currentHead->next)) {
+        result = currentHead->data;
+        delete currentHead;
+        return true;
+      }
+    }
+    return false;  // Queue was empty
   }
 };
