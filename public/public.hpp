@@ -173,19 +173,19 @@ bool IsAlphabet(const char a) {
   return ('a' <= a && a <= 'z') || ('A' <= a && a <= 'Z');
 }
 
-std::string w2s(const std::wstring &wide) {
-  // std::string str;
-  // std::transform(wide.begin(), wide.end(), std::back_inserter(str),
-  //                [](unsigned short c) { return char(c); });
-  // return str;
-  static std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-  return std::move(cvt.to_bytes(wide));
-}
+// std::string w2s(const std::wstring &wide) {
+//   // std::string str;
+//   // std::transform(wide.begin(), wide.end(), std::back_inserter(str),
+//   //                [](unsigned short c) { return char(c); });
+//   // return str;
+//   static std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+//   return std::move(cvt.to_bytes(wide));
+// }
 
-std::wstring s2w(const std::string &str) {
-  static std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-  return cvt.from_bytes(str);
-}
+// std::wstring s2w(const std::string &str) {
+//   static std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+//   return cvt.from_bytes(str);
+// }
 
 class IO {
  public:
