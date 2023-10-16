@@ -24,6 +24,6 @@
 #include "public/public.hpp"
 // #include "public/timer.hpp"
 // #include "snappy.h"
+#include "algorithms/heap.hpp"
 #include "public/coding.hpp"
-
 using namespace std;

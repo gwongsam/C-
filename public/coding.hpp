@@ -92,3 +92,4 @@ void lua_test() {
   }
 
   lua_close(L);  // 关闭Lua状态机}
+}
