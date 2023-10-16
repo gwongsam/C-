@@ -23,6 +23,7 @@ file(GLOB SOURCES "*.cpp" "public/*.cpp")
 # set(CMAKE_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/openssl)
 find_package(Lua REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED COMPONENTS locale)
 # If you set any CMAKE_ variables, that can go here.
 # (But usually don't do this, except maybe for C++ standard)
 
@@ -44,6 +45,7 @@ add_executable(exe main.cpp)
 # 链接Lua库到你的项目
 target_link_libraries(exe ${LUA_LIBRARIES})
 target_link_libraries(exe OpenSSL::Crypto)
+target_link_libraries(exe Boost::locale)
 
 # 包含Lua头文件目录
 target_include_directories(exe PRIVATE ${LUA_INCLUDE_DIR})
